@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/Ionicons';
-
 
 import IntroScreen from '../screens/IntroScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -12,33 +11,53 @@ import PriceOverviewScreen from '../screens/PriceOverviewScreen';
 import PriceDetailsScreen from '../screens/PriceDetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// Custom Tab Icon using Emojis (no vector-icons needed)
+const TabIcon = ({ focused, routeName }) => {
+  const emojis = {
+    Home: focused ? '🏠' : '🏠',
+    Search: focused ? '🔍' : '🔍',
+    Price: focused ? '💰' : '💰',
+    Profile: focused ? '👤' : '👤',
+  };
+  
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 24 }}>{emojis[routeName]}</Text>
+      <Text style={{ 
+        fontSize: 10, 
+        color: focused ? '#FF6B6B' : 'gray',
+        marginTop: 2 
+      }}>
+        {routeName}
+      </Text>
+    </View>
+  );
+};
 
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Search') {
-            iconName = focused ? 'search' : 'search-outline';
-          } else if (route.name === 'Price') {
-            iconName = focused ? 'pricetag' : 'pricetag-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-          return <Icon name={iconName} size={size} color={color} />;
-        },
+        tabBarIcon: ({ focused }) => (
+          <TabIcon focused={focused} routeName={route.name} />
+        ),
         tabBarActiveTintColor: '#FF6B6B',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 5,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={PriceOverviewScreen} />
+      <Tab.Screen name="Search" component={PriceDetailsScreen} />
       <Tab.Screen name="Price" component={PriceOverviewScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
@@ -50,12 +69,11 @@ export default function AppNavigator() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    
     setTimeout(() => setIsReady(true), 1000);
   }, []);
 
   if (!isReady) {
-    return null; 
+    return null;
   }
 
   return (

@@ -9,8 +9,8 @@ import {
   StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCategory, loadPrices } from '../redux/slices';
-
+import { selectCategory } from '../redux/categorySlice';
+import { loadPrices } from '../redux/priceSlice';
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { categories, services, selectedCategory } = useSelector(
